@@ -1,5 +1,4 @@
 import "dotenv/config";
-
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import sequelize from "./db/config";
@@ -10,9 +9,9 @@ import userRoutes from "./routes/user.routes";
 
 const app = Fastify({ logger: true });
 
-// ✅ CORRECT CORS CONFIG (THIS FIXES YOUR ISSUE)
+// ✅ ONLY CORS PLUGIN (ENOUGH)
 app.register(cors, {
-  origin: true, // allow all origins
+  origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 });
