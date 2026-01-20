@@ -35,8 +35,15 @@ export const testDBConnection = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
+
+    // 🔎 DEBUG: Which database & schema backend is connected to
+    const [result] = await sequelize.query(
+      "SELECT current_database(), current_schema();"
+    );
+    console.log("CONNECTED DB INFO:", result);
+
   } catch (error) {
-    console.error("❌ Database connection failed (will retry):", error);
+    console.error("❌ Database connection failed:", error);
   }
 };
 
