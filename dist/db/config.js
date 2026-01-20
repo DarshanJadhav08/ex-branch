@@ -18,10 +18,10 @@ const sequelize = new sequelize_1.Sequelize(process.env.DB_DATABASE, process.env
         }
         : {},
     pool: {
-        max: 5,
+        max: 3,
         min: 0,
-        acquire: 30000,
-        idle: 10000,
+        acquire: 10000,
+        idle: 5000,
     },
 });
 const testDBConnection = async () => {
