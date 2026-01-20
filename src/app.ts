@@ -9,7 +9,6 @@ import userRoutes from "./routes/user.routes";
 
 const app = Fastify({ logger: true });
 
-// ✅ ONLY CORS PLUGIN (ENOUGH)
 app.register(cors, {
   origin: "*",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -19,17 +18,18 @@ app.register(cors, {
 app.register(userRoutes);
 
 const start = async () => {
+  const port = Number(process.env.PORT) || 3000;
+
   try {
-    await sequelize.authenticate();
-    await sequelize.sync();
-
-    const port = Number(process.env.PORT) || 3000;
+    // 🔹 Start server FIRST (important for Render)
     await app.listen({ port, host: "0.0.0.0" });
-
     console.log(`🚀 Server running on port ${port}`);
+
+    // 🔹 Then connect DB (non-blocking startup)
+    await sequelize.authenticate();
+    console.log("✅ Database connected successfully");
   } catch (err) {
-    console.error("❌ Server start failed", err);
-    process.exit(1);
+    console.error("❌ Startup error", err);
   }
 };
 
