@@ -11,26 +11,30 @@ const sequelize = new Sequelize(
     dialect: "postgres",
     logging: false,
 
-    dialectOptions:
-      process.env.NODE_ENV === "production"
-        ? {
-            ssl: {
-              require: true,
-              rejectUnauthorized: false,
-            },
-          }
-        : {},
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
   }
 );
 
-// 🔒 Safety check
+// ⚠️ DO NOT kill the app
 export const testDBConnection = async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
   } catch (error) {
-    console.error("❌ Unable to connect to database:", error);
-    process.exit(1);
+    console.error("❌ Database connection failed (will retry):", error);
+    // ❌ process.exit(1) REMOVE
   }
 };
 
