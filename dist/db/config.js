@@ -3,12 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.testDBConnection = void 0;
 require("dotenv/config");
 const sequelize_1 = require("sequelize");
+const isProduction = process.env.NODE_ENV === "production";
 const sequelize = new sequelize_1.Sequelize(process.env.DB_DATABASE, process.env.DB_USER, process.env.DB_PASSWORD, {
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT),
     dialect: "postgres",
     logging: false,
-    dialectOptions: process.env.NODE_ENV === "production"
+    dialectOptions: isProduction
         ? {
             ssl: {
                 require: true,
@@ -16,16 +17,20 @@ const sequelize = new sequelize_1.Sequelize(process.env.DB_DATABASE, process.env
             },
         }
         : {},
+    pool: {
+        max: 5,
+        min: 0,
+        acquire: 30000,
+        idle: 10000,
+    },
 });
-// 🔒 Safety check
 const testDBConnection = async () => {
     try {
         await sequelize.authenticate();
         console.log("✅ Database connected successfully");
     }
     catch (error) {
-        console.error("❌ Unable to connect to database:", error);
-        process.exit(1);
+        console.error("❌ Database connection failed (will retry):", error);
     }
 };
 exports.testDBConnection = testDBConnection;
